@@ -11,7 +11,6 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import datetime
 
-
 FIREBASE_CREDENTIALS = settings.FIREBASE_CREDENTIALS
 
 # Initialize Firebase Admin SDK
