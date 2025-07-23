@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Board</title>
+    <style>
+        .job-card { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+        .job-card h3 { margin: 0; }
+        .job-card ul { margin: 5px 0; }
+        .error { color: red; }
+        .success { color: green; }
+        form { max-width: 600px; margin: 20px 0; }
+        label { font-weight: bold; }
+        textarea, input { width: 100%; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Welcome, {{ user.username }}!</h2>
+    
+    <!-- Display messages -->
+    {% for message in messages %}
+        <p class="{% if message.tags == 'success' %}success{% else %}error{% endif %}">{{ message }}</p>
+    {% endfor %}
+    
+    <!-- Job submission form -->
+    <h3>Post a New Job</h3>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.category.label_tag }} {{ form.category }}<br>
+        {{ form.title.label_tag }} {{ form.title }}<br>
+        {{ form.specs.label_tag }} {{ form.specs }}<br>
+        <small>Enter specs as comma-separated values (e.g., "SEO knowledge, 10 hrs/week, ₹30k/month")</small><br>
+        {{ form.apply_link.label_tag }} {{ form.apply_link }}<br>
+        <button type="submit">Post Job</button>
+    </form>
+    
+    <!-- Job listings -->
+    <h3>Available Jobs</h3>
+    {% if jobs %}
+        {% for job in jobs %}
+            <div class="job-card">
+                <h3>{{ job.title }} ({{ job.category }})</h3>
+                <ul>
+                    {% for spec in job.specs_list %}
+                        <li>{{ spec }}</li>
+                    {% endfor %}
+                </ul>
+                <p><a href="{{ job.apply_link }}" target="_blank">Apply Now</a></p>
+                <p>Posted by: {{ job.user.username }} on {{ job.created_at|date:"F d, Y" }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No jobs available.</p>
+    {% endif %}
+    
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+</body>
+</html>
