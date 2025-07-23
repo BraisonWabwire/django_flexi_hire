@@ -124,6 +124,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# from pathlib import Path
-# BASE_DIR = Path(__file__)
-# FIREBASE_CREDENTIALS = BASE_DIR / 'serviceAccountKey.json'
+import os
+import json
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, '..', 'serviceAccountKey.json')
