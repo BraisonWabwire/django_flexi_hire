@@ -19,5 +19,5 @@ from django.urls import path,include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('firebase_app/', include('firebase_app.urls')),  # Include the firebase_app URLs 
+    path('', include('firebase_app.urls')),  # Include the firebase_app URLs 
 ]
