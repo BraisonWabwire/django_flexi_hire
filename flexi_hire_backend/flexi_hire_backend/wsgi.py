@@ -14,3 +14,6 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'flexi_hire_backend.settings')
 
 application = get_wsgi_application()
+
+
+# This file is used to configure the WSGI application for the Django project.
