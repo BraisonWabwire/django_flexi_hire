@@ -24,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ddpr3v8l9k74s)w=q1n80!%@07anm_og7g9mfa@t0&4ik=5qu9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://django-flexi-hire.onrender.com']
 
 
 # Application definition
