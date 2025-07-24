@@ -2,129 +2,137 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Login – Job Board</title>
+  <title>Login – FlexiHire</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <!-- Google Font & Icons -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-
   <style>
     :root{
-      --primary:#0d6efd;
-      --primary-dark:#0b5ed7;
-      --danger:#dc3545;
-      --gray:#6c757d;
-      --light:#f8f9fa;
-      --radius:.5rem;
-      --shadow:0 4px 12px rgba(0,0,0,.08);
-      --max:420px;
-      --font:'Inter', sans-serif;
+      --primary:#0066ff;
+      --primary-dark:#0046b8;
+      --danger:#e74c3c;
+      --bg:#f5f7fb;
+      --card:#fff;
+      --text:#222;
+      --muted:#6e6e73;
+      --border:#e1e4e8;
+      --radius:12px;
+      --shadow:0 8px 24px rgba(0,0,0,.08);
     }
-    *{box-sizing:border-box;margin:0;padding:0}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
     body{
-      font-family:var(--font);
-      background:#eef2f5;
+      background:linear-gradient(135deg,#667eea 0%, #764ba2 100%);
+      min-height:100vh;
       display:flex;
       align-items:center;
       justify-content:center;
-      min-height:100vh;
       padding:1rem;
     }
     .card{
-      width:100%;
-      max-width:var(--max);
-      background:#fff;
+      background:var(--card);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
-      padding:2rem;
-    }
-    .card h2{
-      font-weight:600;
-      margin-bottom:1.5rem;
-      text-align:center;
-    }
-    .message{
-      padding:.75rem 1rem;
-      border-radius:var(--radius);
-      margin-bottom:1rem;
-      font-size:.9rem;
-      text-align:center;
-    }
-    .message.error{background:#f8d7da;color:var(--danger)}
-    .message.success{background:#d1e7dd;color:var(--success)}
-    form .field{
-      margin-bottom:1rem;
-    }
-    label{
-      display:block;
-      font-weight:600;
-      font-size:.9rem;
-      margin-bottom:.25rem;
-    }
-    input[type=text],
-    input[type=email],
-    input[type=password]{
       width:100%;
-      padding:.6rem .75rem;
-      border:1px solid #ccc;
-      border-radius:var(--radius);
-      font-size:.95rem;
-      font-family:inherit;
+      max-width:400px;
+      padding:2.5rem 2rem;
+      animation:fadeIn .4s ease;
     }
-    input:focus{
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+    .card h2{text-align:center;margin-bottom:1.5rem;font-weight:600;color:var(--text);}
+    .messages{list-style:none;margin-bottom:1rem;}
+    .messages li{
+      padding:.6rem .8rem;
+      border-radius:var(--radius);
+      font-size:.9rem;
+      text-align:center;
+    }
+    .messages .error{background:#ffebee;color:var(--danger);}
+    .messages .success{background:#e8f5e9;color:#2e7d32;}
+    .form-group{position:relative;margin-bottom:1.25rem;}
+    .form-group input{
+      width:100%;
+      padding:.9rem 1rem;
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      font-size:1rem;
+      transition:border-color .25s,box-shadow .25s;
+    }
+    .form-group input:focus{
       outline:none;
       border-color:var(--primary);
-      box-shadow:0 0 0 2px rgba(13,110,253,.25);
+      box-shadow:0 0 0 3px rgba(0,102,255,.15);
     }
     .btn{
       width:100%;
+      padding:.9rem;
       background:var(--primary);
       color:#fff;
-      border:none;
-      padding:.7rem;
-      border-radius:var(--radius);
       font-size:1rem;
+      font-weight:600;
+      border:none;
+      border-radius:var(--radius);
       cursor:pointer;
-      transition:.2s;
+      transition:background .25s;
     }
-    .btn:hover{background:var(--primary-dark)}
-    .link{
+    .btn:hover{background:var(--primary-dark);}
+    .footer-text{
       text-align:center;
       margin-top:1rem;
       font-size:.9rem;
+      color:var(--muted);
     }
-    .link a{color:var(--primary);font-weight:600}
+    .footer-text a{color:var(--primary);font-weight:600;}
+    .toggle-pw{
+      position:absolute;
+      right:1rem;
+      top:50%;
+      transform:translateY(-50%);
+      background:none;
+      border:none;
+      color:var(--muted);
+      cursor:pointer;
+      user-select:none;
+    }
+    @media(max-width:480px){.card{padding:2rem 1.5rem;}}
   </style>
 </head>
-
 <body>
-  <div class="card">
-    <h2>Welcome back</h2>
 
-    <!-- Messages -->
+<div class="card">
+  <h2>Welcome Back</h2>
+
+  <!-- Messages -->
+  <ul class="messages">
     {% for message in messages %}
-      <p class="message {{ message.tags }}">{{ message }}</p>
+      <li class="{{ message.tags }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
+
+  <!-- Login form -->
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <input
+          type="{{ field.field.widget.input_type }}"
+          name="{{ field.html_name }}"
+          id="{{ field.id_for_label }}"
+          placeholder="{{ field.label|title }}"
+          {% if field.field.required %}required{% endif %}
+        >
+        {% if field.errors %}
+          <small style="color:var(--danger);font-size:.75rem">{{ field.errors|join:", " }}</small>
+        {% endif %}
+      </div>
     {% endfor %}
 
-    <!-- Login form -->
-    <form method="post" novalidate>
-      {% csrf_token %}
-      {% for field in form %}
-        <div class="field">
-          {{ field.label_tag }}
-          {{ field }}
-          {% if field.errors %}
-            <small style="color:var(--danger)">{{ field.errors|join:", " }}</small>
-          {% endif %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="btn">Login</button>
-    </form>
+    <button type="submit" class="btn">Login</button>
+  </form>
 
-    <div class="link">
-      Need an account? <a href="{% url 'register' %}">Register</a>
-    </div>
-  </div>
+  <p class="footer-text">
+    Need an account? <a href="{% url 'register' %}">Register here</a>
+  </p>
+</div>
+
 </body>
 </html>
