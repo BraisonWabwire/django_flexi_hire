@@ -26,7 +26,9 @@ SECRET_KEY = 'django-insecure-ddpr3v8l9k74s)w=q1n80!%@07anm_og7g9mfa@t0&4ik=5qu9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://django-flexi-hire.onrender.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django-flexi-hire.onrender.com']
+
+
 
 
 # Application definition
