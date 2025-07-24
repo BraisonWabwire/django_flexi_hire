@@ -2,201 +2,373 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard – FlexiHire</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FlexiHire</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'flexi_hire_backend/css/styles.css' %}">
     <style>
-        :root{
-            --primary:#0066ff;
-            --primary-dark:#0046b8;
-            --danger:#e74c3c;
-            --bg:linear-gradient(135deg,#667eea 0%, #764ba2 100%);
-            --card:#fff;
-            --text:#222;
-            --muted:#6e6e73;
-            --border:#e1e4e8;
-            --radius:12px;
-            --shadow:0 8px 24px rgba(0,0,0,.08);
-            --sidebar:#001529;
-            --sidebar-hover:#003366;
+        /* Sidebar-specific styles */
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
         }
-        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
-        body{background:var(--bg);min-height:100vh;color:var(--text);display:flex}
 
-        /* ---------- Sidebar ---------- */
-        .sidebar{
-            width:240px;height:100vh;background:var(--sidebar);color:#fff;
-            display:flex;flex-direction:column;position:fixed;transition:transform .3s ease;z-index:1000
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: var(--sidebar);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
-        .sidebar-header{padding:1.5rem 1rem;font-weight:600;font-size:1.1rem;text-align:center;border-bottom:1px solid var(--sidebar-hover)}
-        .sidebar nav{flex:1;padding:.5rem 0;overflow-y:auto}
-        .sidebar nav a{
-            display:flex;align-items:center;gap:.75rem;
-            padding:.9rem 1.25rem;color:#ffffffcc;border-radius:0 var(--radius) var(--radius) 0;
-            margin:.3rem .5rem .3rem 0;text-decoration:none;transition:.2s;
-        }
-        .sidebar nav a:hover,.sidebar nav a.active{background:var(--sidebar-hover);color:#fff}
-        .sidebar .icon{font-size:1.2rem}
 
-        /* ---------- Main Wrapper ---------- */
-        .wrapper{margin-left:240px;width:calc(100% - 240px);padding:1.5rem;animation:fadeIn .4s ease}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
-        header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem}
-        .hamburger{display:none;background:none;border:none;font-size:1.75rem;color:var(--text);cursor:pointer}
+        .sidebar-header {
+            padding: 1.5rem 1rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--sidebar-hover);
+        }
 
-        /* ---------- Messages ---------- */
-        .alert{padding:.75rem 1rem;border-radius:var(--radius);margin-bottom:1rem;font-size:.9rem}
-        .alert.error{background:#ffebee;color:var(--danger)}
-        .alert.success{background:#e8f5e9;color:#2e7d32}
+        .sidebar nav {
+            flex: 1;
+            padding: 0.5rem 0;
+            overflow-y: auto;
+        }
 
-        /* ---------- Forms ---------- */
-        .form-card{
-            background:var(--card);padding:1.5rem;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.5rem
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.9rem 1.25rem;
+            color: #ffffffcc;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 0.3rem 0.5rem 0.3rem 0;
+            text-decoration: none;
+            transition: 0.2s;
         }
-        .form-card h3{margin-bottom:1rem;font-weight:600}
-        .form-group{margin-bottom:1rem}
-        .form-group input,.form-group textarea,.form-group select{
-            width:100%;padding:.8rem 1rem;border:1px solid var(--border);border-radius:var(--radius);font-size:1rem
-        }
-        .form-group input:focus,.form-group textarea:focus,.form-group select:focus{
-            outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,102,255,.15)
-        }
-        .btn{
-            background:var(--primary);color:#fff;border:none;padding:.8rem 1rem;border-radius:var(--radius);
-            font-weight:600;cursor:pointer;transition:.2s
-        }
-        .btn:hover{background:var(--primary-dark)}
 
-        /* ---------- Job Grid ---------- */
-        .job-grid{
-            display:grid;gap:1rem;
-            grid-template-columns:repeat(auto-fill,minmax(300px,1fr))
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: var(--sidebar-hover);
+            color: #fff;
         }
-        .job-card{
-            background:var(--card);border-radius:var(--radius);padding:1.25rem;
-            box-shadow:var(--shadow);transition:transform .2s,box-shadow .2s
-        }
-        .job-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(0,0,0,.12)}
-        .job-card h4{margin-bottom:.5rem;font-weight:600}
-        .job-card .chip{
-            font-size:.7rem;background:var(--primary);color:#fff;padding:.25rem .6rem;border-radius:12px;margin-bottom:.5rem;display:inline-block
-        }
-        .job-card ul{margin:.5rem 0 0 1.25rem;font-size:.85rem;color:var(--muted)}
-        .job-card .actions{margin-top:1rem;display:flex;gap:.5rem}
-        .job-card .actions a,.job-card .actions button{
-            padding:.4rem .8rem;border-radius:var(--radius);font-size:.8rem;border:none;cursor:pointer
-        }
-        .edit{background:var(--primary);color:#fff}
-        .delete{background:var(--danger);color:#fff}
 
-        /* ---------- Responsive ---------- */
-        @media(max-width:768px){
-            .sidebar{transform:translateX(-100%);width:220px}
-            .sidebar.open{transform:translateX(0)}
-            .wrapper{margin-left:0;width:100%}
-            .hamburger{display:block}
+        .sidebar .icon {
+            font-size: 1.2rem;
+        }
+
+        .wrapper {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            padding: 1.5rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.75rem;
+            color: var(--text);
+            cursor: pointer;
+        }
+
+        /* Job table */
+        .job-table-container {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+        }
+
+        .job-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .job-table th,
+        .job-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .job-table th {
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .job-table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .job-table tr:hover {
+            background: #e6f0fa;
+        }
+
+        .job-table td a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .job-table td a:hover {
+            text-decoration: underline;
+        }
+
+        .job-table ul {
+            list-style: disc;
+            margin-left: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .job-table .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .job-table .actions a {
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .job-table .actions a.edit {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .job-table .actions a.edit:hover {
+            background: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        .job-table .actions a.delete {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .job-table .actions a.delete:hover {
+            background: #c0392b;
+            text-decoration: none;
+        }
+
+        /* Toggleable job form */
+        .form-card {
+            display: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .form-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 220px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .wrapper {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .job-table th,
+            .job-table td {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
+
+            .job-table .actions a {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card,
+            .search-form {
+                padding: 1rem;
+            }
+
+            .job-table th,
+            .job-table td {
+                font-size: 0.8rem;
+                padding: 0.6rem;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">FlexiHire</div>
+            <nav>
+                <a href="{% url 'home' %}" class="active">
+                    <span class="material-icons icon">dashboard</span>Dashboard
+                </a>
+                <a href="#" onclick="toggleJobForm()">
+                    <span class="material-icons icon">post_add</span>Post Job
+                </a>
+                <a href="{% url 'logout' %}">
+                    <span class="material-icons icon">logout</span>Logout
+                </a>
+            </nav>
+        </aside>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-    <div class="sidebar-header">FlexiHire</div>
-    <nav>
-        <a href="{% url 'home' %}" class="active">
-            <span class="material-icons icon">dashboard</span>Dashboard
-        </a>
-        <a href="#post-job">
-            <span class="material-icons icon">post_add</span>Post Job
-        </a>
-        <a href="{% url 'logout' %}">
-            <span class="material-icons icon">logout</span>Logout
-        </a>
-    </nav>
-</aside>
+        <!-- Main content -->
+        <main class="wrapper">
+            <header>
+                <button class="hamburger" aria-label="Toggle menu" onclick="toggleSidebar()">☰</button>
+                <h1>Welcome, {{ user.username }}!</h1>
+            </header>
 
-<!-- Main content -->
-<main class="wrapper">
-    <header>
-        <button class="hamburger" aria-label="Toggle menu" onclick="toggleSidebar()">☰</button>
-        <h1>Welcome, {{ user.username }}!</h1>
-    </header>
+            <!-- Messages -->
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
 
-    <!-- Messages -->
-    {% for message in messages %}
-        <div class="alert {{ message.tags }}">{{ message }}</div>
-    {% endfor %}
+            <!-- Search -->
+            <form method="get" class="search-form form-card">
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or category">
+                    <button class="btn" type="submit">Search</button>
+                    {% if search_query %}
+                        <a class="btn" style="background: var(--muted); color: #fff;" href="{% url 'home' %}">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
 
-    <!-- Search -->
-    <form method="get" class="form-card">
-        <div style="display:flex;gap:.5rem">
-            <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or category">
-            <button class="btn" type="submit">Search</button>
-            {% if search_query %}
-                <a class="btn" style="background:var(--muted)" href="{% url 'home' %}">Clear</a>
-            {% endif %}
-        </div>
-    </form>
+            <!-- Post-Job form -->
+            <section id="post-job" class="form-card">
+                <h3>Post a New Job</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">{{ form.category }}</div>
+                    <div class="form-group">{{ form.title }}</div>
+                    <div class="form-group">{{ form.specs }}</div>
+                    <small>Comma-separated specs (e.g., "SEO knowledge, 10 hrs/week")</small>
+                    <div class="form-group">{{ form.apply_link }}</div>
+                    <button type="submit" class="btn">Post Job</button>
+                </form>
+            </section>
 
-    <!-- Post-Job form -->
-    <section id="post-job" class="form-card">
-        <h3>Post a New Job</h3>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">{{ form.category }}</div>
-            <div class="form-group">{{ form.title }}</div>
-            <div class="form-group">{{ form.specs }}</div>
-            <small>Comma-separated specs (e.g. "SEO knowledge, 10 hrs/week")</small>
-            <div class="form-group">{{ form.apply_link }}</div>
-            <button type="submit" class="btn">Post Job</button>
-        </form>
-    </section>
-
-    <!-- Job grid -->
-    <section>
-        <h3>Available Jobs</h3>
-        {% if jobs %}
-            <div class="job-grid">
-                {% for job in jobs %}
-                    <div class="job-card">
-                        <span class="chip">{{ job.category }}</span>
-                        <h4>{{ job.title }}</h4>
-                        <ul>
-                            {% for spec in job.specs_list %}
-                                <li>{{ spec }}</li>
-                            {% endfor %}
-                        </ul>
-                        <a href="{{ job.apply_link }}" target="_blank" class="btn" style="font-size:.8rem">Apply</a>
-                        {% if job.user_id == user.id %}
-                            <div class="actions">
-                                <a href="{% url 'edit_job' job.id %}" class="edit">Edit</a>
-                                <a href="{% url 'delete_job' job.id %}" class="delete" onclick="return confirm('Delete this job?')">Delete</a>
-                            </div>
-                        {% endif %}
+            <!-- Job table -->
+            <section class="job-listings">
+                <h3>Available Jobs</h3>
+                {% if jobs %}
+                    <div class="job-table-container">
+                        <table class="job-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Specs</th>
+                                    <th>Apply Link</th>
+                                    <th>Posted By</th>
+                                    <th>Posted On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.category }}</td>
+                                        <td>
+                                            <ul>
+                                                {% for spec in job.specs_list %}
+                                                    <li>{{ spec }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td><a href="{{ job.apply_link }}" target="_blank">Apply</a></td>
+                                        <td>{{ job.user }}</td>
+                                        <td>{{ job.created_at }}</td>
+                                        <td>
+                                            {% if job.user_id == user.id %}
+                                                <div class="actions">
+                                                    <a href="{% url 'edit_job' job.id %}" class="edit">Edit</a>
+                                                    <a href="{% url 'delete_job' job.id %}" class="delete" onclick="return confirm('Delete this job?')">Delete</a>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No jobs available.</p>
-        {% endif %}
-    </section>
-</main>
+                {% else %}
+                    <p>No jobs available.</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
 
-<script>
-    const sidebar = document.getElementById('sidebar');
-    function toggleSidebar(){
-        sidebar.classList.toggle('open');
-    }
-    // close sidebar when clicking outside on mobile
-    document.addEventListener('click', e=>{
-        if(window.innerWidth > 768) return;
-        if(!sidebar.contains(e.target) && !e.target.closest('.hamburger')){
-            sidebar.classList.remove('open');
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
         }
-    });
-</script>
 
+        function toggleJobForm() {
+            const jobForm = document.getElementById('post-job');
+            jobForm.classList.toggle('active');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth > 768) return;
+            if (!document.getElementById('sidebar').contains(e.target) && !e.target.closest('.hamburger')) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        });
+    </script>
 </body>
 </html>
