@@ -129,7 +129,7 @@ import json
 
 # BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # FIREBASE_CREDENTIALS = os.path.join(BASE_DIR, '..', 'flexi-hire-firebase-adminsdk-fbsvc-40e6aaee3f.json')
-FIREBASE_CREDENTIALS = '/etc/secrets/firebase-credentials.json'
+FIREBASE_CREDENTIALS = '/etc/secrets/flexi-hire-firebase-adminsdk-fbsvc-40e6aaee3f.json'
 
 
 
