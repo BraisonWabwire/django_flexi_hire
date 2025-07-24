@@ -171,6 +171,12 @@
             margin-bottom: 1rem;
             font-size: 0.9rem;
             text-align: center;
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .alert.fade-out {
+            opacity: 0;
         }
 
         .alert.error {
@@ -352,7 +358,7 @@
         }
 
         .job-table th {
-            background: var(--primary); /* Solid primary color */
+            background: var(--primary);
             color: #fff;
             font-weight: 600;
             text-transform: uppercase;
@@ -595,7 +601,7 @@
                 <a href="{% url 'home' %}" class="active">
                     <i class="fas fa-tachometer-alt icon"></i>Dashboard
                 </a>
-                <a href="javascript:void(0);" onclick="toggleJobForm()">
+                <a href="javascript:void(0);" class="post-job-link">
                     <i class="fas fa-plus-circle icon"></i>Post Job
                 </a>
                 <a href="{% url 'logout' %}">
@@ -622,7 +628,6 @@
                 <div style="display: flex; gap: 0.5rem;">
                     <div class="form-group">
                         <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or category" aria-label="Search jobs">
-                        <label>Search Jobs</label>
                     </div>
                     <button class="btn" type="submit">Search</button>
                     {% if search_query %}
@@ -710,15 +715,18 @@
     </div>
 
     <script>
+        // Toggle sidebar
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('open');
         }
 
+        // Toggle job form
         function toggleJobForm() {
             const jobForm = document.getElementById('post-job');
             if (jobForm) {
                 jobForm.classList.toggle('active');
+                console.log('Toggled job form:', jobForm.classList.contains('active') ? 'Visible' : 'Hidden');
             } else {
                 console.error("Element with ID 'post-job' not found.");
             }
@@ -732,10 +740,31 @@
             }
         });
 
-        // Ensure Post Job link doesn't trigger navigation
-        document.querySelector('a[onclick="toggleJobForm()"]').addEventListener('click', (e) => {
-            e.preventDefault(); // Prevent default link behavior
-            toggleJobForm();
+        // Bind Post Job link click event
+        document.addEventListener('DOMContentLoaded', () => {
+            const postJobLink = document.querySelector('.post-job-link');
+            if (postJobLink) {
+                postJobLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    toggleJobForm();
+                    console.log('Post Job link clicked');
+                });
+            } else {
+                console.error("Post Job link with class 'post-job-link' not found.");
+            }
+        });
+
+        // Auto-fade alerts after 3 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 500); // Match transition duration
+                }, 3000); // 3 seconds delay
+            });
         });
     </script>
 </body>
