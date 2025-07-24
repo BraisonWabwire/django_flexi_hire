@@ -172,3 +172,5 @@ def edit_job_view(request, job_id):
         return redirect('home')
 
     return render(request, 'firebase_app/edit_job.html', {'form': form, 'job_id': job_id})
+
+# Checking commit status
