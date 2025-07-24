@@ -1,732 +1,742 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Dashboard - FlexiHire</title>
- <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
- <style>
- /* Root variables */
- :root {
- --primary: #00d4c0;
- --primary-dark: #00b7a8;
- --danger: #ff6b6b;
- --danger-dark: #e53e3e;
- --bg: linear-gradient(135deg, #00d4d8 0%, #ff2e63 100%);
- --card: #fff; /* Changed to solid white */
- --text: #2d3748;
- --muted: #718096;
- --border: #e2e8f0;
- --radius: 12px;
- --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
- --sidebar: rgba(30, 30, 47, 0.95);
- --sidebar-hover: linear-gradient(to right, #00d4c0, #ff6b6b);
- }
-
- /* General styles */
- * {
- box-sizing: border-box;
- margin: 0;
- padding: 0;
- font-family: 'Poppins', sans-serif;
- }
-
- body {
- background: var(--bg);
- min-height: 100vh;
- color: var(--text);
- overflow-x: hidden;
- }
-
- /* Dashboard layout */
- .dashboard {
- display: flex;
- min-height: 100vh;
- position: relative;
- overflow: hidden;
- }
-
- .dashboard::before {
- content: '';
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.15)" fill-opacity="1" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,149.3C672,149,768,203,864,213.3C960,224,1056,192,1152,181.3C1248,171,1344,181,1392,186.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat bottom;
- background-size: cover;
- animation: wave 10s infinite ease-in-out;
- z-index: 0;
- }
-
- @keyframes wave {
- 0%, 100% { transform: translateY(0); }
- 50% { transform: translateY(-10px); }
- }
-
- /* Sidebar */
- .sidebar {
- width: 260px;
- height: 100vh;
- background: var(--sidebar);
- backdrop-filter: blur(8px);
- color: #fff;
- padding: 1.5rem;
- position: fixed;
- transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
- z-index: 1000;
- border-right: 2px solid var(--primary);
- }
-
- .sidebar-header {
- font-size: 1.3rem;
- font-weight: 700;
- text-align: center;
- margin-bottom: 2rem;
- background: linear-gradient(to right, #00d4c0, #ff6b6b);
- -webkit-background-clip: text;
- -webkit-text-fill-color: transparent;
- }
-
- .sidebar nav {
- display: flex;
- flex-direction: column;
- gap: 0.5rem;
- }
-
- .sidebar nav a {
- display: flex;
- align-items: center;
- gap: 0.75rem;
- padding: 0.8rem 1rem;
- color: #e2e8f0;
- text-decoration: none;
- border-radius: 8px;
- transition: all 0.3s ease;
- }
-
- .sidebar nav a:hover,
- .sidebar nav a.active {
- background: var(--sidebar-hover);
- color: #fff;
- box-shadow: 0 0 10px rgba(0, 212, 192, 0.3);
- }
-
- .sidebar nav a i {
- font-size: 1.2rem;
- transition: transform 0.2s ease;
- }
-
- .sidebar nav a:hover i {
- transform: scale(1.2);
- }
-
- /* Main content */
- .main-content {
- margin-left: 260px;
- padding: 2rem;
- width: calc(100% - 260px);
- z-index: 1;
- animation: slideIn 0.5s ease;
- }
-
- @keyframes slideIn {
- from { opacity: 0; transform: translateX(20px); }
- to { opacity: 1; transform: translateX(0); }
- }
-
- .header {
- display: flex;
- align-items: center;
- gap: 1rem;
- margin-bottom: 1.5rem;
- }
-
- .header h1 {
- font-size: 1.8rem;
- font-weight: 700;
- color: #fff;
- text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
- }
-
- .hamburger {
- display: none;
- background: none;
- border: none;
- font-size: 1.8rem;
- color: #fff;
- cursor: pointer;
- transition: transform 0.2s ease;
- }
-
- .hamburger:hover {
- transform: rotate(90deg);
- }
-
- /* Alerts */
- .alert {
- padding: 0.75rem 1rem;
- border-radius: var(--radius);
- margin-bottom: 1rem;
- font-size: 0.9rem;
- text-align: center;
- }
-
- .alert.error {
- background: rgba(255, 107, 107, 0.1);
- color: var(--danger);
- }
-
- .alert.success {
- background: rgba(46, 125, 50, 0.1);
- color: #2e7d32;
- }
-
- /* Form styles */
- .form-card,
- .login-container,
- .register-container {
- background: var(--card);
- padding: 2rem;
- border-radius: var(--radius);
- box-shadow: var(--shadow);
- margin: 2rem auto;
- max-width: 600px;
- }
-
- .form-card h3,
- .form-card h2,
- .login-container h2,
- .register-container h2 {
- margin-bottom: 1rem;
- font-weight: 700;
- text-align: center;
- color: var(--text);
- }
-
- .form-card {
- display: none;
- margin-bottom: 2rem;
- animation: slideUp 0.3s ease;
- }
-
- .form-card.active {
- display: block;
- }
-
- @keyframes slideUp {
- from { opacity: 0; transform: translateY(20px); }
- to { opacity: 1; transform: translateY(0); }
- }
-
- .form-group {
- margin-bottom: 1.25rem;
- position: relative;
- }
-
- .form-group label {
- font-weight: 500;
- color: var(--text);
- font-size: 0.9rem;
- position: absolute;
- top: 50%;
- left: 1rem;
- transform: translateY(-50%);
- transition: all 0.3s ease;
- pointer-events: none;
- }
-
- .form-group input:not(:placeholder-shown) + label,
- .form-group textarea:not(:placeholder-shown) + label,
- .form-group select:not(:invalid) + label {
- top: -0.5rem;
- left: 0.8rem;
- font-size: 0.75rem;
- background: var(--card);
- padding: 0 0.3rem;
- color: var(--primary);
- }
-
- .form-group input,
- .form-group textarea,
- .form-group select {
- width: 100%;
- padding: 0.9rem 1rem;
- border: 1px solid var(--border);
- border-radius: var(--radius);
- font-size: 1rem;
- background: #fff; /* Solid white background */
- transition: all 0.3s ease;
- box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
- }
-
- .form-group input:focus,
- .form-group textarea:focus,
- .form-group select:focus {
- outline: none;
- border: 1px solid var(--primary); /* Solid primary color border */
- box-shadow: 0 0 8px rgba(0, 212, 192, 0.3);
- }
-
- .form-group input::placeholder,
- .form-group textarea::placeholder,
- .form-group select:invalid {
- color: var(--muted);
- font-style: italic;
- }
-
- .form-card small {
- color: var(--muted);
- font-size: 0.8rem;
- display: block;
- margin-top: 0.5rem;
- }
-
- /* Search form */
- .search-form {
- display: flex;
- gap: 0.5rem;
- margin-bottom: 1.5rem;
- max-width: 600px;
- }
-
- .search-form input {
- flex: 1;
- padding: 0.9rem 1rem;
- border: 1px solid var(--border);
- border-radius: var(--radius);
- font-size: 1rem;
- background: #fff; /* Solid white background */
- transition: all 0.3s ease;
- }
-
- .search-form input:focus {
- outline: none;
- border: 1px solid var(--primary); /* Solid primary color border */
- box-shadow: 0 0 8px rgba(0, 212, 192, 0.3);
- }
-
- /* Buttons */
- .btn {
- background: var(--primary); /* Solid primary color */
- color: #fff;
- border: none;
- padding: 0.9rem 1.2rem;
- border-radius: var(--radius);
- font-weight: 600;
- cursor: pointer;
- transition: all 0.3s ease;
- }
-
- .btn:hover {
- background: var(--primary-dark); /* Solid darker primary color */
- box-shadow: 0 0 8px rgba(0, 212, 192, 0.4);
- }
-
- /* Job table */
- .job-table-container {
- overflow-x: auto;
- margin-bottom: 2rem;
- background: rgba(255, 255, 255, 0.1);
- backdrop-filter: blur(8px);
- border-radius: var(--radius);
- padding: 1rem;
- }
-
- .job-table {
- width: 100%;
- border-collapse: separate;
- border-spacing: 0;
- background: #fff;
- border-radius: var(--radius);
- overflow: hidden;
- box-shadow: var(--shadow);
- }
-
- .job-table th,
- .job-table td {
- padding: 1rem;
- text-align: left;
- border-bottom: 1px solid rgba(0, 0, 0, 0.1);
- }
-
- .job-table th {
- background: linear-gradient(90deg, #00d4c0 0%, #ff6b6b 100%);
- color: #fff;
- font-weight: 600;
- text-transform: uppercase;
- font-size: 0.9rem;
- position: sticky;
- top: 0;
- z-index: 10;
- }
-
- .job-table tr:nth-child(even) {
- background: #f8fafc;
- }
-
- .job-table tr:hover {
- background: #e6fffa;
- transition: background 0.2s ease;
- }
-
- .job-table td a {
- color: var(--primary);
- text-decoration: none;
- font-weight: 500;
- }
-
- .job-table td a:hover {
- text-decoration: underline;
- }
-
- .job-table ul {
- list-style: none;
- margin: 0;
- padding: 0;
- font-size: 0.85rem;
- color: var(--muted);
- }
-
- .job-table ul li {
- padding: 0.2rem 0;
- position: relative;
- padding-left: 1.2rem;
- }
-
- .job-table ul li::before {
- content: '• ';
- position: absolute;
- left: 0;
- color: var(--primary);
- }
-
- .job-table .actions {
- display: flex;
- gap: 0.5rem;
- }
-
- .job-table .actions a {
- padding: 0.5rem;
- border-radius: 8px;
- font-size: 0.9rem;
- text-align: center;
- transition: all 0.2s ease;
- position: relative;
- }
-
- .job-table .actions a.edit {
- background: var(--primary);
- color: #fff;
- }
-
- .job-table .actions a.edit:hover {
- background: var(--primary-dark);
- box-shadow: 0 0 8px rgba(0, 212, 192, 0.4);
- }
-
- .job-table .actions a.delete {
- background: var(--danger);
- color: #fff;
- }
-
- .job-table .actions a.delete:hover {
- background: var(--danger-dark);
- box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
- }
-
- .job-table .actions a::after {
- content: attr(data-tooltip);
- position: absolute;
- bottom: 100%;
- left: 50%;
- transform: translateX(-50%);
- background: #2d3748;
- color: #fff;
- padding: 0.3rem 0.6rem;
- border-radius: 4px;
- font-size: 0.75rem;
- white-space: nowrap;
- opacity: 0;
- visibility: hidden;
- transition: all 0.2s ease;
- }
-
- .job-table .actions a:hover::after {
- opacity: 1;
- visibility: visible;
- bottom: 120%;
- }
-
- /* Responsive */
- @media (max-width: 768px) {
- .sidebar {
- transform: translateX(-100%);
- width: 220px;
- }
-
- .sidebar.open {
- transform: translateX(0);
- }
-
- .main-content {
- margin-left: 0;
- width: 100%;
- padding: 1rem;
- }
-
- .hamburger {
- display: block;
- }
-
- .header h1 {
- font-size: 1.5rem;
- }
-
- .job-table th,
- .job-table td {
- font-size: 0.85rem;
- padding: 0.8rem;
- }
-
- .job-table .actions a {
- padding: 0.4rem;
- font-size: 0.8rem;
- }
-
- .job-table ul {
- font-size: 0.8rem;
- }
- }
-
- @media (max-width: 480px) {
- .form-card,
- .search-form {
- padding: 1rem;
- max-width: 100%;
- }
-
- .form-card h3,
- .header h1 {
- font-size: 1.3rem;
- }
-
- .form-group input,
- .form-group textarea,
- .form-group select {
- font-size: 0.9rem;
- }
-
- .btn {
- font-size: 0.9rem;
- padding: 0.8rem 1rem;
- }
-
- .job-table th,
- .job-table td {
- font-size: 0.75rem;
- padding: 0.6rem;
- }
- }
-
- /* Login and Register containers */
- .login-container,
- .register-container {
- display: flex;
- flex-direction: column;
- align-items: center;
- justify-content: center;
- min-height: 100vh;
- }
-
- .login-link,
- .register-link {
- text-align: center;
- margin-top: 1rem;
- font-size: 0.9rem;
- }
-
- .login-link a,
- .register-link a {
- color: var(--primary);
- text-decoration: none;
- font-weight: 500;
- }
-
- .login-link a:hover,
- .register-link a:hover {
- text-decoration: underline;
- }
-
- @media (max-width: 600px) {
- .login-container,
- .register-container,
- .form-card {
- padding: 1.5rem;
- margin: 0.5rem;
- }
-
- .login-container h2,
- .register-container h2,
- .form-card h2,
- .form-card h3 {
- font-size: 1.5rem;
- }
-
- .form-group input,
- .form-group textarea,
- .form-group select {
- font-size: 0.9rem;
- }
-
- .btn {
- font-size: 0.9rem;
- }
- }
- </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - FlexiHire</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Root variables */
+        :root {
+            --primary: #00d4c0;
+            --primary-dark: #00b7a8;
+            --danger: #ff6b6b;
+            --danger-dark: #e53e3e;
+            --bg: linear-gradient(135deg, #00d4d8 0%, #ff2e63 100%);
+            --card: #fff;
+            --text: #2d3748;
+            --muted: #718096;
+            --border: #e2e8f0;
+            --radius: 12px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --sidebar: rgba(30, 30, 47, 0.95);
+            --sidebar-hover: linear-gradient(to right, #00d4c0, #ff6b6b);
+        }
+
+        /* General styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--bg);
+            min-height: 100vh;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        /* Dashboard layout */
+        .dashboard {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.15)" fill-opacity="1" d="M0,160L48,176C96,192,192,224,288,213.3C384,203,480,149,576,149.3C672,149,768,203,864,213.3C960,224,1056,192,1152,181.3C1248,171,1344,181,1392,186.7L1440,192L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path></svg>') no-repeat bottom;
+            background-size: cover;
+            animation: wave 10s infinite ease-in-out;
+            z-index: 0;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 1.5rem;
+            position: fixed;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            border-right: 2px solid var(--primary);
+        }
+
+        .sidebar-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+            background: linear-gradient(to right, #00d4c0, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            color: #e2e8f0;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: var(--sidebar-hover);
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 212, 192, 0.3);
+        }
+
+        .sidebar nav a i {
+            font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .sidebar nav a:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Main content */
+        .main-content {
+            margin-left: 260px;
+            padding: 2rem;
+            width: calc(100% - 260px);
+            z-index: 1;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .hamburger {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .hamburger:hover {
+            transform: rotate(90deg);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .alert.error {
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--danger);
+        }
+
+        .alert.success {
+            background: rgba(46, 125, 50, 0.1);
+            color: #2e7d32;
+        }
+
+        /* Form styles */
+        .form-card,
+        .login-container,
+        .register-container {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        .form-card h3,
+        .form-card h2,
+        .login-container h2,
+        .register-container h2 {
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .form-card {
+            display: none;
+            margin-bottom: 2rem;
+            animation: slideUp 0.3s ease;
+        }
+
+        .form-card.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--text);
+            font-size: 0.9rem;
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .form-group input:not(:placeholder-shown) + label,
+        .form-group textarea:not(:placeholder-shown) + label,
+        .form-group select:not(:invalid) + label {
+            top: -0.5rem;
+            left: 0.8rem;
+            font-size: 0.75rem;
+            background: var(--card);
+            padding: 0 0.3rem;
+            color: var(--primary);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: #fff;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 8px rgba(0, 212, 192, 0.3);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder,
+        .form-group select:invalid {
+            color: var(--muted);
+            font-style: italic;
+        }
+
+        .form-card small {
+            color: var(--muted);
+            font-size: 0.8rem;
+            display: block;
+            margin-top: 0.5rem;
+        }
+
+        /* Search form */
+        .search-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+        }
+
+        .search-form input {
+            flex: 1;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            background: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .search-form input:focus {
+            outline: none;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 8px rgba(0, 212, 192, 0.3);
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 0.9rem 1.2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 0 8px rgba(0, 212, 192, 0.4);
+        }
+
+        /* Job table */
+        .job-table-container {
+            overflow-x: auto;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: var(--radius);
+            padding: 1rem;
+        }
+
+        .job-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .job-table th,
+        .job-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .job-table th {
+            background: var(--primary); /* Solid primary color */
+            color: #fff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .job-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .job-table tr:hover {
+            background: #e6fffa;
+            transition: background 0.2s ease;
+        }
+
+        .job-table td a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .job-table td a:hover {
+            text-decoration: underline;
+        }
+
+        .job-table ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .job-table ul li {
+            padding: 0.2rem 0;
+            position: relative;
+            padding-left: 1.2rem;
+        }
+
+        .job-table ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .job-table .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .job-table .actions a {
+            padding: 0.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .job-table .actions a.edit {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .job-table .actions a.edit:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 0 8px rgba(0, 212, 192, 0.4);
+        }
+
+        .job-table .actions a.delete {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .job-table .actions a.delete:hover {
+            background: var(--danger-dark);
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.4);
+        }
+
+        .job-table .actions a::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2d3748;
+            color: #fff;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .job-table .actions a:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: 120%;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 220px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .hamburger {
+                display: block;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .job-table th,
+            .job-table td {
+                font-size: 0.85rem;
+                padding: 0.8rem;
+            }
+
+            .job-table .actions a {
+                padding: 0.4rem;
+                font-size: 0.8rem;
+            }
+
+            .job-table ul {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-card,
+            .search-form {
+                padding: 1rem;
+                max-width: 100%;
+            }
+
+            .form-card h3,
+            .header h1 {
+                font-size: 1.3rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                font-size: 0.9rem;
+                padding: 0.8rem 1rem;
+            }
+
+            .job-table th,
+            .job-table td {
+                font-size: 0.75rem;
+                padding: 0.6rem;
+            }
+        }
+
+        /* Login and Register containers */
+        .login-container,
+        .register-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-link,
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .login-link a,
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .login-link a:hover,
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .login-container,
+            .register-container,
+            .form-card {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            .login-container h2,
+            .register-container h2,
+            .form-card h2,
+            .form-card h3 {
+                font-size: 1.5rem;
+            }
+
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
- <div class="dashboard">
- <!-- Sidebar -->
- <aside class="sidebar" id="sidebar">
- <div class="sidebar-header">FlexiHire</div>
- <nav>
- <a href="{% url 'home' %}" class="active">
- <i class="fas fa-tachometer-alt icon"></i>Dashboard
- </a>
- <a href="#" onclick="toggleJobForm()">
- <i class="fas fa-plus-circle icon"></i>Post Job
- </a>
- <a href="{% url 'logout' %}">
- <i class="fas fa-sign-out-alt icon"></i>Logout
- </a>
- </nav>
- </aside>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">FlexiHire</div>
+            <nav>
+                <a href="{% url 'home' %}" class="active">
+                    <i class="fas fa-tachometer-alt icon"></i>Dashboard
+                </a>
+                <a href="javascript:void(0);" onclick="toggleJobForm()">
+                    <i class="fas fa-plus-circle icon"></i>Post Job
+                </a>
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt icon"></i>Logout
+                </a>
+            </nav>
+        </aside>
 
- <!-- Main content -->
- <main class="main-content">
- <header>
- <button class="hamburger" aria-label="Toggle menu" onclick="toggleSidebar()">
- <i class="fas fa-bars"></i>
- </button>
- </header>
+        <!-- Main content -->
+        <main class="main-content">
+            <header>
+                <button class="hamburger" aria-label="Toggle menu" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </header>
 
- <!-- Messages -->
- {% for message in messages %}
- <div class="alert {{ message.tags }}">{{ message }}</div>
- {% endfor %}
+            <!-- Messages -->
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
 
- <!-- Search -->
- <form method="get" class="search-form form-card active">
- <div style="display: flex; gap: 0.5rem;">
- <div class="form-group">
- <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or category" aria-label="Search jobs">
- <label>Search Jobs</label>
- </div>
- <button class="btn" type="submit">Search</button>
- {% if search_query %}
- <a class="btn" style="background: var(--muted); color: #fff;" href="{% url 'home' %}">Clear</a>
- {% endif %}
- </div>
- </form>
+            <!-- Search -->
+            <form method="get" class="search-form form-card active">
+                <div style="display: flex; gap: 0.5rem;">
+                    <div class="form-group">
+                        <input type="text" name="search" value="{{ search_query }}" placeholder="Search by title or category" aria-label="Search jobs">
+                        <label>Search Jobs</label>
+                    </div>
+                    <button class="btn" type="submit">Search</button>
+                    {% if search_query %}
+                        <a class="btn" style="background: var(--muted); color: #fff;" href="{% url 'home' %}">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
 
- <!-- Post-Job form -->
- <section id=" post-job" class="form-card">
- <h3>Post a New Job</h3>
- <form method="post">
- {% csrf_token %}
- <div class="form-group">
- {{ form.category }}
- <label>Category</label>
- </div>
- <div class="form-group">
- {{ form.title }}
- <label>Job Title</label>
- </div>
- <div class="form-group">
- {{ form.specs }}
- <label>Specifications</label>
- <small>Comma-separated specs (e.g., "SEO knowledge, 10 hrs/week")</small>
- </div>
- <div class="form-group">
- {{ form.apply_link }}
- <label>Application Link</label>
- </div>
- <button type="submit" class="btn">Post Job</button>
- </form>
- </section>
+            <!-- Post-Job form -->
+            <section id="post-job" class="form-card">
+                <h3>Post a New Job</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.category }}
+                        <label>Category</label>
+                    </div>
+                    <div class="form-group">
+                        {{ form.title }}
+                        <label>Job Title</label>
+                    </div>
+                    <div class="form-group">
+                        {{ form.specs }}
+                        <label>Specifications</label>
+                        <small>Comma-separated specs (e.g., "SEO knowledge, 10 hrs/week")</small>
+                    </div>
+                    <div class="form-group">
+                        {{ form.apply_link }}
+                        <label>Application Link</label>
+                    </div>
+                    <button type="submit" class="btn">Post Job</button>
+                </form>
+            </section>
 
- <!-- Job table -->
- <section class="job-listings">
- <h3>Available Jobs</h3>
- {% if jobs %}
- <div class="job-table-container">
- <table class="job-table">
- <thead>
- <tr>
- <th>Title</th>
- <th>Category</th>
- <th>Specs</th>
- <th>Apply Link</th>
- <th>Posted By</th>
- <th>Posted On</th>
- <th>Actions</th>
- </tr>
- </thead>
- <tbody>
- {% for job in jobs %}
- <tr>
- <td>{{ job.title }}</td>
- <td>{{ job.category }}</td>
- <td>
- <ul>
- {% for spec in job.specs_list %}
- <li>{{ spec }}</li>
- {% endfor %}
- </ul>
- </td>
- <td><a href="{{ job.apply_link }}" target="_blank">Apply</a></td>
- <td>{{ job.user }}</td>
- <td>{{ job.created_at }}</td>
- <td>
- {% if job.user_id == user.id %}
- <div class="actions">
- <a href="{% url 'edit_job' job.id %}" class="edit" data-tooltip="Edit Job"><i class="fas fa-edit"></i></a>
- <a href="{% url 'delete_job' job.id %}" class="delete" data-tooltip="Delete Job" onclick="return confirm('Delete this job?')"><i class="fas fa-trash-alt"></i></a>
- </div>
- {% endif %}
- </td>
- </tr>
- {% endfor %}
- </tbody>
- </table>
- </div>
- {% else %}
- <p>No jobs available.</p>
- {% endif %}
- </section>
- </main>
- </div>
+            <!-- Job table -->
+            <section class="job-listings">
+                <h3>Available Jobs</h3>
+                {% if jobs %}
+                    <div class="job-table-container">
+                        <table class="job-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Specs</th>
+                                    <th>Apply Link</th>
+                                    <th>Posted By</th>
+                                    <th>Posted On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.category }}</td>
+                                        <td>
+                                            <ul>
+                                                {% for spec in job.specs_list %}
+                                                    <li>{{ spec }}</li>
+                                                {% endfor %}
+                                            </ul>
+                                        </td>
+                                        <td><a href="{{ job.apply_link }}" target="_blank">Apply</a></td>
+                                        <td>{{ job.user }}</td>
+                                        <td>{{ job.created_at }}</td>
+                                        <td>
+                                            {% if job.user_id == user.id %}
+                                                <div class="actions">
+                                                    <a href="{% url 'edit_job' job.id %}" class="edit" data-tooltip="Edit Job"><i class="fas fa-edit"></i></a>
+                                                    <a href="{% url 'delete_job' job.id %}" class="delete" data-tooltip="Delete Job" onclick="return confirm('Delete this job?')"><i class="fas fa-trash-alt"></i></a>
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p>No jobs available.</p>
+                {% endif %}
+            </section>
+        </main>
+    </div>
 
- <script>
- function toggleSidebar() {
- const sidebar = document.getElementById('sidebar');
- sidebar.classList.toggle('open');
- }
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
 
- function toggleJobForm() {
- const jobForm = document.getElementById('post-job');
- jobForm.classList.toggle('active');
- }
+        function toggleJobForm() {
+            const jobForm = document.getElementById('post-job');
+            if (jobForm) {
+                jobForm.classList.toggle('active');
+            } else {
+                console.error("Element with ID 'post-job' not found.");
+            }
+        }
 
- // Close sidebar when clicking outside on mobile
- document.addEventListener('click', (e) => {
- if (window.innerWidth > 768) return;
- if (!document.getElementById('sidebar').contains(e.target) && !e.target.closest('.hamburger')) {
- document.getElementById('sidebar').classList.remove('open');
- }
- });
- </script>
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth > 768) return;
+            if (!document.getElementById('sidebar').contains(e.target) && !e.target.closest('.hamburger')) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        });
+
+        // Ensure Post Job link doesn't trigger navigation
+        document.querySelector('a[onclick="toggleJobForm()"]').addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default link behavior
+            toggleJobForm();
+        });
+    </script>
 </body>
 </html>
