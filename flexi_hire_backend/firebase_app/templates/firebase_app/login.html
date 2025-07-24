@@ -1,15 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login – Job Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Google Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <style>
+    :root{
+      --primary:#0d6efd;
+      --primary-dark:#0b5ed7;
+      --danger:#dc3545;
+      --gray:#6c757d;
+      --light:#f8f9fa;
+      --radius:.5rem;
+      --shadow:0 4px 12px rgba(0,0,0,.08);
+      --max:420px;
+      --font:'Inter', sans-serif;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:var(--font);
+      background:#eef2f5;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+      padding:1rem;
+    }
+    .card{
+      width:100%;
+      max-width:var(--max);
+      background:#fff;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:2rem;
+    }
+    .card h2{
+      font-weight:600;
+      margin-bottom:1.5rem;
+      text-align:center;
+    }
+    .message{
+      padding:.75rem 1rem;
+      border-radius:var(--radius);
+      margin-bottom:1rem;
+      font-size:.9rem;
+      text-align:center;
+    }
+    .message.error{background:#f8d7da;color:var(--danger)}
+    .message.success{background:#d1e7dd;color:var(--success)}
+    form .field{
+      margin-bottom:1rem;
+    }
+    label{
+      display:block;
+      font-weight:600;
+      font-size:.9rem;
+      margin-bottom:.25rem;
+    }
+    input[type=text],
+    input[type=email],
+    input[type=password]{
+      width:100%;
+      padding:.6rem .75rem;
+      border:1px solid #ccc;
+      border-radius:var(--radius);
+      font-size:.95rem;
+      font-family:inherit;
+    }
+    input:focus{
+      outline:none;
+      border-color:var(--primary);
+      box-shadow:0 0 0 2px rgba(13,110,253,.25);
+    }
+    .btn{
+      width:100%;
+      background:var(--primary);
+      color:#fff;
+      border:none;
+      padding:.7rem;
+      border-radius:var(--radius);
+      font-size:1rem;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .btn:hover{background:var(--primary-dark)}
+    .link{
+      text-align:center;
+      margin-top:1rem;
+      font-size:.9rem;
+    }
+    .link a{color:var(--primary);font-weight:600}
+  </style>
+</head>
+
 <body>
-    <h2>Login</h2>
+  <div class="card">
+    <h2>Welcome back</h2>
+
+    <!-- Messages -->
     {% for message in messages %}
-        <p>{{ message }}</p>
+      <p class="message {{ message.tags }}">{{ message }}</p>
     {% endfor %}
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
+
+    <!-- Login form -->
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="field">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.errors %}
+            <small style="color:var(--danger)">{{ field.errors|join:", " }}</small>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn">Login</button>
     </form>
-    <p>Need an account? <a href="{% url 'register' %}">Register</a></p>
+
+    <div class="link">
+      Need an account? <a href="{% url 'register' %}">Register</a>
+    </div>
+  </div>
 </body>
 </html>

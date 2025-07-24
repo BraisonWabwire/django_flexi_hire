@@ -32,7 +32,7 @@ def register_view(request):
             return redirect('login')
     else:
         form = UserCreationForm()
-    return render(request, 'flexi_hire_backend/register.html', {'form': form})
+    return render(request, 'firebase_app/register.html', {'form': form})
 
 def login_view(request):
     if request.method == 'POST':
@@ -51,7 +51,7 @@ def login_view(request):
             messages.error(request, 'Invalid username or password.')
     else:
         form = AuthenticationForm()
-    return render(request, 'flexi_hire_backend/login.html', {'form': form})
+    return render(request, 'firebase_app/login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
@@ -101,7 +101,7 @@ def home_view(request):
         messages.error(request, f'Error fetching jobs from Firestore: {str(e)}')
         jobs = []
 
-    return render(request, 'flexi_hire_backend/home.html', {
+    return render(request, 'firebase_app/home.html', {
         'form': form,
         'jobs': jobs,
         'user': request.user,
@@ -171,4 +171,4 @@ def edit_job_view(request, job_id):
         messages.error(request, f'Error fetching job: {str(e)}')
         return redirect('home')
 
-    return render(request, 'flexi_hire_backend/edit_job.html', {'form': form, 'job_id': job_id})
+    return render(request, 'firebase_app/edit_job.html', {'form': form, 'job_id': job_id})
